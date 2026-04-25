@@ -1,0 +1,490 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', -apple-system, 'Segoe UI', sans-serif;
+    background: #eef2f8;
+    color: #202124;
+}
+
+.container {
+    width: 1024px;
+    margin: 0 auto;
+    background: #ffffff;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+
+.header {
+    background: #1a73e8;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.2s ease;
+}
+
+.logo:hover {
+    transform: scale(1.02);
+}
+
+.logo-icon {
+    background: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover .logo-icon {
+    transform: rotate(10deg);
+}
+
+.logo-icon span {
+    font-size: 24px;
+    color: #1a73e8;
+}
+
+.logo-text h2 {
+    color: white;
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.logo-text p {
+    color: rgba(255,255,255,0.85);
+    font-size: 11px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 8px 0;
+    display: block;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.nav-link.active {
+    border-bottom: 2px solid white;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: white;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.nav-link.has-dropdown::after {
+    content: " ▼";
+    font-size: 10px;
+    margin-left: 4px;
+    position: static;
+    width: auto;
+    height: auto;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    min-width: 180px;
+    padding: 8px 0;
+    margin-top: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+    transform: translateY(-8px);
+    z-index: 200;
+}
+
+.nav-item:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: #202124;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.dropdown-menu a:hover {
+    background: #e8f0fe;
+    color: #1a73e8;
+    padding-left: 26px;
+}
+
+.city-badge {
+    background: rgba(255,255,255,0.2);
+    border-radius: 30px;
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.city-badge:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.02);
+}
+
+.city-badge .city-name {
+    font-weight: 500;
+    font-size: 15px;
+    color: white;
+}
+
+.city-selector {
+    background: #e8f0fe;
+    padding: 20px 24px;
+    border-bottom: 1px solid #d9e2ef;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.current-city-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.current-city-info .label {
+    font-size: 14px;
+    color: #1a73e8;
+    font-weight: 500;
+    background: white;
+    padding: 6px 14px;
+    border-radius: 30px;
+    transition: all 0.2s ease;
+}
+
+.current-city-info .label:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.current-city-info .city-name-large {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a73e8;
+}
+
+.search-other {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: white;
+    border-radius: 40px;
+    padding: 6px 8px 6px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+.search-other:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.search-other span:first-child {
+    color: #5f6368;
+    font-size: 18px;
+}
+
+.search-other input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    width: 180px;
+    padding: 8px 0;
+    font-family: inherit;
+}
+
+.search-other input::placeholder {
+    color: #9aa9bb;
+}
+
+.search-other button {
+    background: #1a73e8;
+    border: none;
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+    cursor: default;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.search-other button:hover {
+    background: #0d5bbf;
+    transform: scale(0.98);
+}
+
+.content {
+    padding: 32px 24px 48px;
+}
+
+.breadcrumbs {
+    font-size: 13px;
+    margin-bottom: 24px;
+    color: #5f6368;
+}
+
+.forecast-demo {
+    background: #f8faff;
+    border-radius: 24px;
+    padding: 28px;
+    border: 1px solid #e2e8f0;
+}
+
+.current-weather {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 28px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 28px;
+}
+
+.city-info h3 {
+    font-size: 28px;
+    font-weight: 500;
+    color: #1a73e8;
+    margin-bottom: 8px;
+}
+
+.city-info p {
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.temp-main {
+    text-align: right;
+}
+
+.temp-main .big-temp {
+    font-size: 64px;
+    font-weight: 500;
+    color: #202124;
+}
+
+.temp-main .condition {
+    color: #5f6368;
+    font-size: 16px;
+}
+
+.feels-like {
+    font-size: 14px;
+    color: #5f6368;
+    margin-top: 4px;
+}
+
+.hourly {
+    margin-bottom: 32px;
+}
+
+.hourly h4, .daily h4, .details h4 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #1a73e8;
+    margin-bottom: 20px;
+    border-left: 4px solid #1a73e8;
+    padding-left: 12px;
+}
+
+.hourly-items {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.hour-card {
+    background: white;
+    border-radius: 20px;
+    padding: 14px 12px;
+    text-align: center;
+    min-width: 80px;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hour-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.hour-card .time {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a73e8;
+}
+
+.hour-card .temp-hour {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 8px 0;
+}
+
+.daily-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+.day-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #eef2f6;
+    transition: background 0.2s ease;
+}
+
+.day-row:hover {
+    background: #f0f4fa;
+    border-radius: 12px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-left: -12px;
+    margin-right: -12px;
+}
+
+.day-name {
+    width: 140px;
+    font-weight: 500;
+}
+
+.day-temp-range {
+    font-weight: 500;
+    color: #1a73e8;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.detail-card {
+    background: white;
+    border-radius: 20px;
+    padding: 18px 14px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.detail-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.detail-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.detail-label {
+    font-size: 13px;
+    color: #5f6368;
+    margin-bottom: 8px;
+}
+
+.detail-value {
+    font-size: 22px;
+    font-weight: 500;
+    color: #1a73e8;
+}
+
+.extra-stats {
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+    background: #e8f0fe;
+    border-radius: 20px;
+    padding: 16px 24px;
+    margin-top: 24px;
+}
+
+.extra-item {
+    text-align: center;
+    flex: 1;
+}
+
+.extra-label {
+    font-size: 12px;
+    color: #5f6368;
+    margin-bottom: 6px;
+}
+
+.extra-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a73e8;
+}
+
+.footer {
+    background: #f8f9fa;
+    padding: 24px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #5f6368;
+}
+
+.footer-links {
+    display: flex;
+    gap: 24px;
+}

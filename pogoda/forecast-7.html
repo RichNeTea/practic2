@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рич Погода | Прогноз на 7 дней</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background: #eef2f8; color: #202124; }
+        .container { width: 1024px; margin: 0 auto; background: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+        .header { background: #1a73e8; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { background: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .logo-icon span { font-size: 24px; color: #1a73e8; }
+        .logo-text h2 { color: white; font-size: 22px; font-weight: 500; }
+        .logo-text p { color: rgba(255,255,255,0.85); font-size: 11px; }
+        .nav-menu { display: flex; gap: 32px; align-items: center; }
+        .nav-item { position: relative; }
+        .nav-link { color: white; font-size: 15px; font-weight: 500; text-decoration: none; padding: 8px 0; display: block; }
+        .nav-link.has-dropdown::after { content: " ▼"; font-size: 10px; margin-left: 4px; }
+        .dropdown-menu { position: absolute; top: 100%; left: 0; background: white; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); min-width: 180px; padding: 8px 0; margin-top: 8px; opacity: 0; visibility: hidden; transition: 0.25s; transform: translateY(-8px); z-index: 200; }
+        .nav-item:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu a { display: block; padding: 10px 20px; color: #202124; text-decoration: none; font-size: 14px; }
+        .dropdown-menu a:hover { background: #e8f0fe; color: #1a73e8; }
+        .city-badge { background: rgba(255,255,255,0.2); border-radius: 30px; padding: 6px 16px; display: flex; align-items: center; gap: 8px; }
+        .city-badge .city-name { font-weight: 500; font-size: 15px; color: white; }
+        .city-selector { background: #e8f0fe; padding: 20px 24px; border-bottom: 1px solid #d9e2ef; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+        .current-city-info { display: flex; align-items: center; gap: 12px; }
+        .current-city-info .label { font-size: 14px; color: #1a73e8; font-weight: 500; background: white; padding: 6px 14px; border-radius: 30px; }
+        .current-city-info .city-name-large { font-size: 20px; font-weight: 600; color: #1a73e8; }
+        .search-other { display: flex; gap: 12px; align-items: center; background: white; border-radius: 40px; padding: 6px 8px 6px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .search-other input { border: none; outline: none; font-size: 14px; width: 180px; padding: 8px 0; font-family: inherit; }
+        .search-other button { background: #1a73e8; border: none; border-radius: 30px; padding: 8px 20px; font-size: 13px; font-weight: 500; color: white; cursor: pointer; }
+        .content { padding: 32px 24px 48px; }
+        .breadcrumbs { font-size: 13px; margin-bottom: 24px; color: #5f6368; }
+        .forecast-demo { background: #f8faff; border-radius: 24px; padding: 28px; border: 1px solid #e2e8f0; }
+        .daily-items { display: flex; flex-direction: column; gap: 8px; }
+        .day-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eef2f6; }
+        .day-name { width: 140px; font-weight: 500; }
+        .day-temp-range { font-weight: 500; color: #1a73e8; }
+        .footer { background: #f8f9fa; padding: 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; font-size: 12px; color: #5f6368; }
+        .footer-links { display: flex; gap: 24px; }
+        .admin-btn { position: fixed; top: 20px; right: 20px; z-index: 9999; background: #1a73e8; color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 500; font-size: 13px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .admin-btn:hover { background: #0d5bbf; }
+        h1 { font-size: 28px; color: #1a73e8; margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo"><div class="logo-icon"><span>☀️</span></div><div class="logo-text"><h2>Рич Погода</h2><p>точный прогноз</p></div></div>
+        <div class="nav-menu">
+            <div class="nav-item"><a href="index.html" class="nav-link">Главная</a></div>
+            <div class="nav-item"><a href="#" class="nav-link has-dropdown">Прогноз</a><div class="dropdown-menu"><a href="forecast-7.html">Прогноз на 7 дней</a><a href="forecast-30.html">Прогноз на 30 дней</a></div></div>
+            <div class="nav-item"><a href="details.html" class="nav-link">Детали погоды</a></div>
+        </div>
+        <div class="city-badge"><span>📍</span><span class="city-name">Стерлитамак</span></div>
+    </div>
+    <div class="city-selector">
+        <div class="current-city-info"><span class="label">Ваш город</span><span class="city-name-large">Стерлитамак</span></div>
+        <div class="search-other"><span>🔍</span><input type="text" placeholder="Найти другой город..." value="Москва"><button>Найти</button></div>
+    </div>
+    <div class="content">
+        <div class="breadcrumbs"><span>Главная</span> &nbsp;/&nbsp; <span>Прогноз на 7 дней</span></div>
+        <div class="forecast-demo">
+            <h1>Прогноз на 7 дней — Стерлитамак</h1>
+            <div class="daily-items" id="weekForecast"></div>
+        </div>
+    </div>
+    <div class="footer"><div>© 2025 Рич Погода — Стерлитамак</div><div class="footer-links"><span>Политика конфиденциальности</span><span>richpogoda@info.ru</span></div></div>
+</div>
+<a href="admin.php" class="admin-btn">🔐 Админка</a>
+<script>
+    async function loadWeekForecast() {
+        try {
+            const response = await fetch('get_weather.php');
+            const data = await response.json();
+            const weekContainer = document.getElementById('weekForecast');
+            weekContainer.innerHTML = '';
+            if (data.week_forecast) {
+                data.week_forecast.forEach(day => {
+                    weekContainer.innerHTML += `<div class="day-row"><span class="day-name">${day.day}</span><span>${day.icon}</span><span class="day-temp-range">${day.temp_max} / ${day.temp_min}</span><span style="color:#5f6368; font-size:13px;">${day.description}</span></div>`;
+                });
+            }
+        } catch(error) {
+            console.error('Ошибка:', error);
+            document.getElementById('weekForecast').innerHTML = '<div class="day-row"><span class="day-name">Суббота, 29 марта</span><span>☁️</span><span class="day-temp-range">+4° / -2°</span></div>';
+        }
+    }
+    loadWeekForecast();
+</script>
+</body>
+</html>

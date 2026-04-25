@@ -1,0 +1,143 @@
+DROP DATABASE IF EXISTS weather_db;
+CREATE DATABASE weather_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE weather_db;
+
+CREATE TABLE admins (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO admins (username, password) VALUES 
+('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
+('test', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    city VARCHAR(100) DEFAULT 'Стерлитамак',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO users (username, email, password, city) VALUES 
+('user', 'user@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Стерлитамак');
+
+CREATE TABLE weather_data (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    city VARCHAR(100) NOT NULL UNIQUE,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    current_temp VARCHAR(10) DEFAULT '+0°',
+    current_condition VARCHAR(100) DEFAULT 'Облачно',
+    feels_like VARCHAR(10) DEFAULT '0°',
+    sunrise VARCHAR(10) DEFAULT '07:00',
+    sunset VARCHAR(10) DEFAULT '19:00',
+    hourly_forecast LONGTEXT,
+    week_forecast LONGTEXT,
+    month_forecast LONGTEXT,
+    humidity VARCHAR(10) DEFAULT '70%',
+    wind_speed VARCHAR(10) DEFAULT '3 м/с',
+    wind_direction VARCHAR(50) DEFAULT 'западный',
+    pressure VARCHAR(20) DEFAULT '750 мм',
+    uv_index VARCHAR(10) DEFAULT '3',
+    visibility VARCHAR(20) DEFAULT '10 км',
+    dew_point VARCHAR(10) DEFAULT '0°',
+    precipitation VARCHAR(20) DEFAULT '0 мм',
+    wind_gusts VARCHAR(20) DEFAULT 'до 5 м/с',
+    snow_cover VARCHAR(20) DEFAULT '0 см',
+    air_quality VARCHAR(20) DEFAULT 'AQI 45',
+    rain_chance VARCHAR(10) DEFAULT '5%'
+);
+
+INSERT INTO weather_data (city) VALUES 
+('Стерлитамак'),
+('Москва'),
+('Санкт-Петербург'),
+('Новосибирск'),
+('Екатеринбург'),
+('Казань'),
+('Нижний Новгород'),
+('Челябинск'),
+('Самара'),
+('Омск'),
+('Ростов-на-Дону'),
+('Уфа'),
+('Красноярск'),
+('Пермь'),
+('Воронеж'),
+('Волгоград'),
+('Краснодар'),
+('Саратов'),
+('Тюмень'),
+('Тольятти'),
+('Ижевск'),
+('Барнаул'),
+('Ульяновск'),
+('Иркутск'),
+('Хабаровск'),
+('Ярославль'),
+('Владивосток'),
+('Махачкала'),
+('Томск'),
+('Оренбург'),
+('Кемерово'),
+('Новокузнецк'),
+('Рязань'),
+('Астрахань'),
+('Набережные Челны'),
+('Сочи');
+
+UPDATE weather_data SET 
+    current_temp = '+3°',
+    current_condition = 'Облачно с прояснениями',
+    feels_like = '0°',
+    sunrise = '07:02',
+    sunset = '19:45',
+    humidity = '78%',
+    wind_speed = '4.2 м/с',
+    wind_direction = 'юго-западный',
+    pressure = '752 мм',
+    uv_index = '2',
+    visibility = '12 км',
+    dew_point = '-1°',
+    precipitation = '0.2 мм',
+    wind_gusts = 'до 8 м/с',
+    snow_cover = '1-2 см',
+    air_quality = 'AQI 34',
+    rain_chance = '8%'
+WHERE city = 'Стерлитамак';
+
+UPDATE weather_data SET hourly_forecast = '[
+    {"time": "15:00", "temp": "+3°", "icon": "☁️", "precip": "5%"},
+    {"time": "16:00", "temp": "+3°", "icon": "☁️", "precip": "5%"},
+    {"time": "17:00", "temp": "+2°", "icon": "🌥️", "precip": "10%"},
+    {"time": "18:00", "temp": "+1°", "icon": "🌥️", "precip": "10%"},
+    {"time": "19:00", "temp": "0°", "icon": "🌙", "precip": "5%"}
+]';
+
+UPDATE weather_data SET week_forecast = '[
+    {"day": "Понедельник", "icon": "☁️", "temp_max": "+4°", "temp_min": "-2°", "description": "облачно"},
+    {"day": "Вторник", "icon": "🌧️", "temp_max": "+6°", "temp_min": "+1°", "description": "дождь"},
+    {"day": "Среда", "icon": "☁️", "temp_max": "+7°", "temp_min": "+2°", "description": "пасмурно"},
+    {"day": "Четверг", "icon": "☀️", "temp_max": "+10°", "temp_min": "+3°", "description": "солнечно"},
+    {"day": "Пятница", "icon": "🌦️", "temp_max": "+9°", "temp_min": "+4°", "description": "небольшой дождь"},
+    {"day": "Суббота", "icon": "☀️", "temp_max": "+12°", "temp_min": "+5°", "description": "солнечно"},
+    {"day": "Воскресенье", "icon": "⛅", "temp_max": "+11°", "temp_min": "+4°", "description": "переменная облачность"}
+]';
+
+UPDATE weather_data SET month_forecast = '[
+    {"day": "1-я неделя", "icon": "☁️", "temp_max": "+2°", "temp_min": "-3°"},
+    {"day": "2-я неделя", "icon": "☀️", "temp_max": "+5°", "temp_min": "-1°"},
+    {"day": "3-я неделя", "icon": "🌧️", "temp_max": "+4°", "temp_min": "+1°"},
+    {"day": "4-я неделя", "icon": "☀️", "temp_max": "+7°", "temp_min": "+2°"}
+]';
+
+CREATE TABLE site_settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    site_name VARCHAR(100) DEFAULT 'Рич Погода',
+    default_city VARCHAR(100) DEFAULT 'Стерлитамак'
+);
+
+INSERT INTO site_settings (id) VALUES (1);
