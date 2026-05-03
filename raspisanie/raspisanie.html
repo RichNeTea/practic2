@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f4f9fe;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 28px 20px;
+      color: #142d3c;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #0a4c6e;
+    }
+    .header p {
+      color: #3b6e8f;
+      margin-top: 6px;
+    }
+
+    .filters-panel {
+      background: white;
+      border-radius: 48px;
+      padding: 18px 28px;
+      margin-bottom: 36px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      align-items: flex-end;
+      border: 1px solid #e2ecf3;
+    }
+    .filter-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 170px;
+    }
+    .filter-item label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #2c6b96;
+    }
+    .filter-item input, .filter-item select {
+      background: #f9fcfd;
+      border: 1px solid #cfdfe9;
+      border-radius: 60px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: #1e4663;
+      cursor: pointer;
+    }
+    .reset-button {
+      background: #eef2fa;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 60px;
+      font-weight: 500;
+      color: #2c5a7a;
+      cursor: pointer;
+      margin-left: auto;
+    }
+
+    .schedule-table-wrapper {
+      background: white;
+      border-radius: 28px;
+      border: 1px solid #e2edf2;
+      overflow-x: auto;
+      margin-bottom: 32px;
+    }
+    .day-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1a6d9f;
+      padding: 18px 24px 6px 24px;
+      border-left: 5px solid #1a6d9f;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      text-align: left;
+      padding: 14px 20px;
+      background: #f0f6fc;
+      color: #1f5680;
+      font-weight: 600;
+      border-bottom: 1px solid #deeaf2;
+    }
+    td {
+      padding: 14px 20px;
+      border-bottom: 1px solid #ecf3f8;
+      vertical-align: top;
+    }
+    .pair-number {
+      font-weight: 700;
+      background: #eef3fb;
+      display: inline-block;
+      padding: 2px 14px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+    }
+    .empty-lesson {
+      color: #9bb7cf;
+      font-style: italic;
+      background: #fafeff;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.75rem;
+      color: #7c9ab5;
+      padding-top: 16px;
+      border-top: 1px solid #dee8f0;
+    }
+    @media (max-width: 700px) {
+      .filters-panel { flex-direction: column; align-items: stretch; border-radius: 28px; }
+      .reset-button { margin-left: 0; margin-top: 8px; }
+      th, td { padding: 10px 12px; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📋 Расписание ГАПОУ СКиПТ</h1>
+  </div>
+
+  <div class="filters-panel">
+    <div class="filter-item"><label>📅 Дата (ДД.ММ.ГГГГ)</label><input type="text" id="dateFilter" placeholder="например, 05.05.2025"></div>
+    <div class="filter-item"><label>🎓 Группа</label><select id="groupSelect"></select></div>
+    <div class="filter-item"><label>📖 Тип занятия</label><select id="typeSelect"><option value="all">Все типы</option><option value="Лекция">Лекции</option><option value="Практика">Практика / Лабы</option></select></div>
+    <button class="reset-button" id="resetFiltersBtn">Сбросить фильтры</button>
+  </div>
+
+  <div id="scheduleContainer"></div>
+  <div class="footer">Пары уплотняются к началу дня (1,2,3…). Если у группы 3 занятия — это пары 1,2,3, дальше — нет занятия.</div>
+</div>
+
+<script>
+
+  const lessonsDB = [
+    // ========== ИСВ-11 ==========
+    { date: "05.05.2025", weekday: "Понедельник", group: "ИСВ-11", subject: "Основы программирования", teacher: "Волкова И.С.", type: "Лекция" },
+    { date: "05.05.2025", weekday: "Понедельник", group: "ИСВ-11", subject: "Python (практика)", teacher: "Волкова И.С.", type: "Практика" },
+    { date: "05.05.2025", weekday: "Понедельник", group: "ИСВ-11", subject: "Физкультура", teacher: "Дмитриев С.А.", type: "Практика" },
+    { date: "06.05.2025", weekday: "Вторник", group: "ИСВ-11", subject: "Компьютерные сети", teacher: "Сергеев Д.П.", type: "Лекция" },
+    { date: "06.05.2025", weekday: "Вторник", group: "ИСВ-11", subject: "Web-технологии", teacher: "Морозова Т.А.", type: "Практика" },
+    { date: "06.05.2025", weekday: "Вторник", group: "ИСВ-11", subject: "Английский язык", teacher: "Смирнова О.К.", type: "Практика" },
+    { date: "07.05.2025", weekday: "Среда", group: "ИСВ-11", subject: "Базы данных", teacher: "Гришина Е.В.", type: "Лекция" },
+    { date: "07.05.2025", weekday: "Среда", group: "ИСВ-11", subject: "SQL (лаб)", teacher: "Гришина Е.В.", type: "Практика" },
+    { date: "08.05.2025", weekday: "Четверг", group: "ИСВ-11", subject: "Математическая логика", teacher: "Новиков А.А.", type: "Лекция" },
+    { date: "08.05.2025", weekday: "Четверг", group: "ИСВ-11", subject: "Математическая логика (семинар)", teacher: "Новиков А.А.", type: "Практика" },
+    { date: "09.05.2025", weekday: "Пятница", group: "ИСВ-11", subject: "Охрана труда", teacher: "Лебедева Е.Н.", type: "Лекция" },
+    { date: "09.05.2025", weekday: "Пятница", group: "ИСВ-11", subject: "Ин.язык", teacher: "Смирнова О.К.", type: "Практика" },
+
+    // ========== ИСВ-21 ==========
+    { date: "05.05.2025", weekday: "Понедельник", group: "ИСВ-21", subject: "Теория вероятностей", teacher: "Баязитова Я.Р.", type: "Лекция" },
+    { date: "05.05.2025", weekday: "Понедельник", group: "ИСВ-21", subject: "Операционные системы", teacher: "Кузнецов В.И.", type: "Лекция" },
+    { date: "05.05.2025", weekday: "Понедельник", group: "ИСВ-21", subject: "Основы алгоритмизации", teacher: "Кузнецов В.И.", type: "Практика" },
+    { date: "06.05.2025", weekday: "Вторник", group: "ИСВ-21", subject: "Основы бережливого производства", teacher: "Лебедева Е.Н.", type: "Лекция" },
+    { date: "06.05.2025", weekday: "Вторник", group: "ИСВ-21", subject: "Физкультура", teacher: "Дмитриев С.А.", type: "Практика" },
+    { date: "07.05.2025", weekday: "Среда", group: "ИСВ-21", subject: "Архитектура аппаратных средств", teacher: "Поливанчук П.Н.", type: "Лекция" },
+    { date: "07.05.2025", weekday: "Среда", group: "ИСВ-21", subject: "Численные методы", teacher: "Новиков А.А.", type: "Практика" },
+    { date: "08.05.2025", weekday: "Четверг", group: "ИСВ-21", subject: "Башкирский язык", teacher: "Харисова Г.Р.", type: "Лекция" },
+    { date: "08.05.2025", weekday: "Четверг", group: "ИСВ-21", subject: "Ин.язык", teacher: "Смирнова О.К.", type: "Практика" },
+    { date: "09.05.2025", weekday: "Пятница", group: "ИСВ-21", subject: "Классный час / Разговоры о важном", teacher: "Куратор", type: "Практика" },
+
+    // ========== ИСВ-31 ==========
+    { date: "05.05.2025", weekday: "Понедельник", group: "ИСВ-31", subject: "УП 08.01", teacher: "Ларионов П.В.", type: "Практика" },
+    { date: "05.05.2025", weekday: "Понедельник", group: "ИСВ-31", subject: "МДК 08.01 Проектирование и разработка интерфейсов", teacher: "Морозова Т.А.", type: "Лекция" },
+    { date: "06.05.2025", weekday: "Вторник", group: "ИСВ-31", subject: "Основы проектирования баз данных", teacher: "Гришина Е.В.", type: "Лекция" },
+    { date: "06.05.2025", weekday: "Вторник", group: "ИСВ-31", subject: "МДК 08.02 Графический дизайн", teacher: "Волкова И.С.", type: "Лекция" },
+    { date: "06.05.2025", weekday: "Вторник", group: "ИСВ-31", subject: "УП 08.02", teacher: "Волкова И.С.", type: "Практика" },
+    { date: "07.05.2025", weekday: "Среда", group: "ИСВ-31", subject: "Архитектура аппаратных средств", teacher: "Поливанчук П.Н.", type: "Лекция" },
+    { date: "07.05.2025", weekday: "Среда", group: "ИСВ-31", subject: "Численные методы", teacher: "Новиков А.А.", type: "Практика" },
+    { date: "08.05.2025", weekday: "Четверг", group: "ИСВ-31", subject: "Башкирский язык (гос)", teacher: "Харисова Г.Р.", type: "Лекция" },
+    { date: "08.05.2025", weekday: "Четверг", group: "ИСВ-31", subject: "Ин.язык", teacher: "Смирнова О.К.", type: "Практика" },
+
+    // ========== ИСВ-41 ==========
+    { date: "05.05.2025", weekday: "Понедельник", group: "ИСВ-41", subject: "Корпоративные информационные системы", teacher: "Ларионов П.В.", type: "Лекция" },
+    { date: "05.05.2025", weekday: "Понедельник", group: "ИСВ-41", subject: "Проектный практикум", teacher: "Ларионов П.В.", type: "Практика" },
+    { date: "06.05.2025", weekday: "Вторник", group: "ИСВ-41", subject: "Data Science", teacher: "Ковальчук М.И.", type: "Лекция" },
+    { date: "06.05.2025", weekday: "Вторник", group: "ИСВ-41", subject: "Анализ данных (лаб)", teacher: "Ковальчук М.И.", type: "Практика" },
+    { date: "07.05.2025", weekday: "Среда", group: "ИСВ-41", subject: "Web-разработка (React)", teacher: "Морозова Т.А.", type: "Практика" },
+    { date: "07.05.2025", weekday: "Среда", group: "ИСВ-41", subject: "Проектная деятельность", teacher: "Ларионов П.В.", type: "Практика" },
+    { date: "08.05.2025", weekday: "Четверг", group: "ИСВ-41", subject: "Безопасность информационных систем", teacher: "Шубин Р.В.", type: "Лекция" },
+    { date: "09.05.2025", weekday: "Пятница", group: "ИСВ-41", subject: "Управление ИТ-проектами", teacher: "Семенова Л.В.", type: "Лекция" },
+    { date: "09.05.2025", weekday: "Пятница", group: "ИСВ-41", subject: "Ин.язык", teacher: "Смирнова О.К.", type: "Практика" },
+  ];
+
+  const MAX_PAIRS = 6;
+
+  function getGroups() {
+    const groupsSet = new Set(lessonsDB.map(item => item.group));
+    return Array.from(groupsSet).sort();
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, (m) => (m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')));
+  }
+
+  function renderSchedule() {
+    const dateValue = document.getElementById('dateFilter').value.trim();
+    const selectedGroup = document.getElementById('groupSelect').value;
+    const selectedType = document.getElementById('typeSelect').value;
+    const container = document.getElementById('scheduleContainer');
+
+    let filtered = [...lessonsDB];
+    if (dateValue !== "") filtered = filtered.filter(l => l.date === dateValue);
+    if (selectedGroup !== "all") filtered = filtered.filter(l => l.group === selectedGroup);
+    if (selectedType !== "all") filtered = filtered.filter(l => l.type === selectedType);
+
+    const grouped = new Map();
+    filtered.forEach(lesson => {
+      const key = `${lesson.date}|${lesson.group}`;
+      if (!grouped.has(key)) grouped.set(key, []);
+      grouped.get(key).push(lesson);
+    });
+
+    if (grouped.size === 0) {
+      container.innerHTML = `<div class="schedule-table-wrapper" style="padding:40px; text-align:center;">📭 Нет занятий по выбранным фильтрам</div>`;
+      return;
+    }
+
+    let output = '';
+    const sortedKeys = Array.from(grouped.keys()).sort((a,b) => {
+      const [dateA] = a.split('|'); const [dateB] = b.split('|');
+      const [d1,m1,y1] = dateA.split('.'); const [d2,m2,y2] = dateB.split('.');
+      return new Date(y1,m1-1,d1) - new Date(y2,m2-1,d2);
+    });
+
+    for (let key of sortedKeys) {
+      const [date, group] = key.split('|');
+      const lessonsGroup = grouped.get(key);
+      const weekday = lessonsGroup[0].weekday;
+
+      output += `<div class="schedule-table-wrapper">
+        <div class="day-title">📅 ${date} · ${weekday} · группа ${escapeHtml(group)}</div>
+        <table>
+          <thead><tr><th>Пара</th><th>Предмет</th><th>Преподаватель</th><th>Тип</th></tr></thead>
+          <tbody>`;
+
+      for (let p = 1; p <= MAX_PAIRS; p++) {
+        if (p - 1 < lessonsGroup.length) {
+          const lesson = lessonsGroup[p - 1];
+          output += `<tr>
+            <td><span class="pair-number">${p}</span></td>
+            <td><strong>${escapeHtml(lesson.subject)}</strong></td>
+            <td>${escapeHtml(lesson.teacher)}</td>
+            <td>${escapeHtml(lesson.type)}</td>
+          </tr>`;
+        } else {
+          output += `<tr class="empty-lesson">
+            <td><span class="pair-number">${p}</span></td>
+            <td colspan="3">— нет занятия —</td>
+          </tr>`;
+        }
+      }
+      output += `</tbody></table></div>`;
+    }
+    container.innerHTML = output;
+  }
+
+  function populateGroupSelect() {
+    const groups = getGroups();
+    const select = document.getElementById('groupSelect');
+    select.innerHTML = '<option value="all">Все группы</option>';
+    groups.forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = g;
+      opt.textContent = g;
+      select.appendChild(opt);
+    });
+  }
+
+  document.getElementById('dateFilter').addEventListener('input', renderSchedule);
+  document.getElementById('groupSelect').addEventListener('change', renderSchedule);
+  document.getElementById('typeSelect').addEventListener('change', renderSchedule);
+  document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+    document.getElementById('dateFilter').value = '';
+    document.getElementById('groupSelect').value = 'all';
+    document.getElementById('typeSelect').value = 'all';
+    renderSchedule();
+  });
+
+  populateGroupSelect();
+  renderSchedule();
+</script>
+</body>
+</html>
